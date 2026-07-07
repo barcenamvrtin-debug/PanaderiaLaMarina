@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nueva guía de reparto</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --kraft: #B9926A;
+    --kraft-dark: #9C7A55;
+    --paper: #FBF9F4;
+    --paper-edge: #EDE8DB;
+    --ink: #2B2620;
+    --ink-soft: #7A7266;
+    --line: #DDD5C4;
+    --route: #2F5C4E;
+    --route-soft: #E4EEE9;
+    --stamp: #B23A2E;
+    --focus: #2F5C4E;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; min-height:100%; }
+  body{
+    font-family:'Inter', sans-serif;
+    color: var(--ink);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 48px 20px;
+    background:
+      repeating-linear-gradient(135deg, rgba(0,0,0,0.025) 0px, rgba(0,0,0,0.025) 2px, transparent 2px, transparent 26px),
+      linear-gradient(180deg, var(--kraft) 0%, var(--kraft-dark) 100%);
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  .ticket{
+    width:100%;
+    max-width: 640px;
+    background: var(--paper);
+    border-radius: 6px;
+    box-shadow: 0 24px 60px rgba(30,20,10,0.35), 0 2px 0 rgba(0,0,0,0.05);
+    position:relative;
+    overflow:hidden;
+  }
+  /* perforation strip */
+  .perf{
+    display:flex;
+    justify-content:space-between;
+    padding: 0 4px;
+    background: var(--paper-edge);
+    height: 14px;
+    align-items:center;
+  }
+  .perf span{
+    width:8px; height:8px; border-radius:50%;
+    background: var(--kraft-dark);
+    opacity:0.5;
+  }
+
+  .head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    padding: 26px 32px 18px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .head .brand{
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    display:flex; align-items:center; gap:10px;
+  }
+  .head .brand .mark{
+    width:26px; height:26px;
+    border-radius: 4px;
+    background: var(--route);
+    position:relative;
+  }
+  .head .brand .mark::after{
+    content:"";
+    position:absolute; inset:6px;
+    border: 2px solid var(--paper);
+    border-radius: 2px;
+  }
+  .head .sub{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  .guia{
+    text-align:right;
+  }
+  .guia .label{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .guia .code{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    font-weight:700;
+    letter-spacing: 0.08em;
+    display:flex;
+    gap: 4px;
+  }
+  .guia .code span{
+    color: var(--line);
+    transition: color 0.25s ease;
+  }
+  .guia .code span.lit{ color: var(--route); }
+
+  .body-wrap{ padding: 26px 32px 32px; position:relative; }
+
+  fieldset{ border:none; padding:0; margin:0 0 20px; }
+  legend{
+    font-family:'Oswald', sans-serif;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--route);
+    margin-bottom: 12px;
+    padding:0;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .field{ margin-bottom: 16px; }
+  .field.full{ grid-column: 1 / -1; }
+
+  label{
+    display:block;
+    font-size: 0.78rem;
+    font-weight:600;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+  label .opt{ font-weight:400; color: var(--ink-soft); }
+
+  input, select, textarea{
+    width:100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: #FFFFFF;
+    font-family:'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    outline:none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  textarea{ resize: vertical; min-height: 64px; }
+  input::placeholder, textarea::placeholder{ color:#B8B1A2; }
+  input:focus, select:focus, textarea:focus{
+    border-color: var(--focus);
+    box-shadow: 0 0 0 3px rgba(47,92,78,0.14);
+  }
+
+  .priority{
+    display:flex;
+    gap: 8px;
+  }
+  .priority input{ position:absolute; opacity:0; pointer-events:none; }
+  .priority label{
+    flex:1;
+    text-align:center;
+    margin:0;
+    padding: 9px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    font-size: 0.82rem;
+    font-weight:600;
+    color: var(--ink-soft);
+    cursor:pointer;
+    transition: all 0.15s ease;
+  }
+  .priority input:checked + label{
+    border-color: var(--route);
+    background: var(--route-soft);
+    color: var(--route);
+  }
+  .priority input:focus-visible + label{
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .actions{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    margin-top: 6px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--line);
+  }
+  button.submit{
+    flex:1;
+    padding: 12px 18px;
+    border-radius: 6px;
+    border:none;
+    background: var(--route);
+    color: #FBF9F4;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size: 0.92rem;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  button.submit:hover{ background:#264D41; }
+  button.submit:active{ transform: translateY(1px); }
+  button.submit .spinner{
+    width:14px; height:14px; border-radius:50%;
+    border:2px solid rgba(251,249,244,0.35);
+    border-top-color:#FBF9F4;
+    display:none;
+    animation: spin 0.7s linear infinite;
+  }
+  button.submit.loading .spinner{ display:inline-block; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  button.secondary{
+    padding: 12px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-soft);
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size: 0.88rem;
+    cursor:pointer;
+  }
+  button.secondary:hover{ border-color: var(--ink-soft); color: var(--ink); }
+
+  button:focus-visible, input:focus-visible{
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .status{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    margin-top: 14px;
+    min-height: 16px;
+  }
+
+  /* stamp */
+  .stamp{
+    position:absolute;
+    top: 90px;
+    right: 40px;
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    font-size: 1.3rem;
+    letter-spacing: 0.08em;
+    text-transform:uppercase;
+    color: var(--stamp);
+    border: 4px solid var(--stamp);
+    border-radius: 8px;
+    padding: 6px 14px;
+    transform: rotate(-12deg) scale(0);
+    opacity:0;
+    pointer-events:none;
+    transition: transform 0.35s cubic-bezier(.2,1.4,.4,1), opacity 0.2s ease;
+    mix-blend-mode: multiply;
+  }
+  .stamp.show{
+    transform: rotate(-12deg) scale(1);
+    opacity: 0.85;
+  }
+
+  @media (max-width: 560px){
+    .grid{ grid-template-columns: 1fr; }
+    .head{ flex-direction:column; gap:14px; }
+    .guia{ text-align:left; }
+    .guia .code{ justify-content:flex-start; }
+    .stamp{ right: 20px; top: 130px; font-size: 1rem; padding:5px 10px; border-width:3px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="ticket">
+    <div class="perf" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="head">
+      <div>
+        <div class="brand"><span class="mark"></span>RepartoPan</div>
+        <div class="sub">Guía de reparto · generada hoy</div>
+      </div>
+      <div class="guia">
+        <div class="label">N° de guía</div>
+        <div class="code" id="tracking">
+          <span data-seg="0">R</span><span data-seg="0">P</span><span data-seg="0">-</span><span data-seg="1">0</span><span data-seg="1">0</span><span data-seg="2">0</span><span data-seg="2">0</span><span data-seg="3">•</span><span data-seg="3">•</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="body-wrap">
+      <div class="stamp" id="stamp">En ruta</div>
+
+      <form id="delivery-form" novalidate>
+        <fieldset>
+          <legend>Destinatario</legend>
+          <div class="grid">
+            <div class="field full">
+              <label for="cliente">Nombre del cliente</label>
+              <input type="text" id="cliente" data-seg="0" placeholder="Ej. María Fernández" required>
+            </div>
+            <div class="field full">
+              <label for="direccion">Dirección de entrega</label>
+              <input type="text" id="direccion" data-seg="0" placeholder="Calle, número, comuna" required>
+            </div>
+            <div class="field">
+              <label for="telefono">Teléfono de contacto</label>
+              <input type="tel" id="telefono" data-seg="1" placeholder="+56 9 1234 5678" required>
+            </div>
+            <div class="field">
+              <label for="hora">Hora estimada</label>
+              <input type="time" id="hora" data-seg="1" required>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Pedido</legend>
+          <div class="grid">
+            <div class="field full">
+              <label for="producto">Producto</label>
+              <select id="producto" data-seg="2" required>
+                <option value="" disabled selected>Selecciona un producto</option>
+                <option>Pan amasado</option>
+                <option>Baguette</option>
+                <option>Pan integral</option>
+                <option>Tortillas de rescoldo</option>
+                <option>Repostería surtida</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cantidad">Cantidad</label>
+              <input type="number" id="cantidad" data-seg="2" min="1" placeholder="12" required>
+            </div>
+            <div class="field">
+              <label for="repartidor">Repartidor asignado</label>
+              <input type="text" id="repartidor" placeholder="Nombre (opcional)">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Prioridad</legend>
+          <div class="priority" data-seg="3">
+            <input type="radio" name="prioridad" id="p-normal" value="normal" checked>
+            <label for="p-normal">Normal</label>
+            <input type="radio" name="prioridad" id="p-urgente" value="urgente">
+            <label for="p-urgente">Urgente</label>
+            <input type="radio" name="prioridad" id="p-programada" value="programada">
+            <label for="p-programada">Programada</label>
+          </div>
+        </fieldset>
+
+        <div class="field full">
+          <label for="notas">Notas de entrega <span class="opt">(opcional)</span></label>
+          <textarea id="notas" placeholder="Ej. dejar en portería, tocar timbre del segundo piso..."></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="submit" id="submit-btn">
+            <span class="spinner"></span>
+            <span class="btn-text">Generar guía</span>
+          </button>
+          <button type="button" class="secondary" id="reset-btn">Limpiar</button>
+        </div>
+
+        <div class="status" id="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </div>
+
+<script>
+  const form = document.getElementById('delivery-form');
+  const btn = document.getElementById('submit-btn');
+  const status = document.getElementById('status');
+  const stamp = document.getElementById('stamp');
+  const resetBtn = document.getElementById('reset-btn');
+  const segSpans = document.querySelectorAll('#tracking span');
+
+  function updateSegments(){
+    const segs = { 0:false, 1:false, 2:false, 3:false };
+
+    const cliente = document.getElementById('cliente').value.trim();
+    const direccion = document.getElementById('direccion').value.trim();
+    segs[0] = !!(cliente && direccion);
+
+    const telefono = document.getElementById('telefono').value.trim();
+    const hora = document.getElementById('hora').value;
+    segs[1] = !!(telefono && hora);
+
+    const producto = document.getElementById('producto').value;
+    const cantidad = document.getElementById('cantidad').value;
+    segs[2] = !!(producto && cantidad);
+
+    segs[3] = true; // priority always has a default selection
+
+    segSpans.forEach(span => {
+      const seg = span.getAttribute('data-seg');
+      span.classList.toggle('lit', segs[seg]);
+    });
+  }
+
+  form.addEventListener('input', updateSegments);
+  updateSegments();
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const required = ['cliente','direccion','telefono','hora','producto','cantidad'];
+    const missing = required.some(id => !document.getElementById(id).value);
+    if(missing){
+      status.style.color = '#B23A2E';
+      status.textContent = 'Completa los campos obligatorios antes de generar la guía.';
+      return;
+    }
+
+    btn.classList.add('loading');
+    status.style.color = 'var(--ink-soft)';
+    status.textContent = 'Generando guía de reparto…';
+
+    setTimeout(() => {
+      btn.classList.remove('loading');
+      stamp.classList.add('show');
+      status.style.color = '#2F5C4E';
+      status.textContent = 'Guía generada correctamente. Reparto en camino.';
+    }, 900);
+  });
+
+  resetBtn.addEventListener('click', () => {
+    form.reset();
+    stamp.classList.remove('show');
+    status.textContent = '';
+    updateSegments();
+  });
+</script>
+
+</body>
+</html>
